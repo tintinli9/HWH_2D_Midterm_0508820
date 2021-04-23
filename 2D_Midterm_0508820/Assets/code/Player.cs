@@ -13,6 +13,20 @@ public class Player : MonoBehaviour
     public Transform tra;
     [Header("動畫元件")]
     public Animator ani;
+    [Header("偵測範圍")]
+    public float rangeAttack = 1.5f;
+    [Header("音效來源")]
+    public AudioSource aud;
+    [Header("攻擊音效")]
+    public AudioClip soundAttack;
+    [Header("獲得音效")]
+    public AudioClip soundGet;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0, 1, 0, 0.1f);
+        Gizmos.DrawSphere(transform.position, rangeAttack);
+    }
 
     private void Move()
     {
@@ -23,9 +37,14 @@ public class Player : MonoBehaviour
         ani.SetFloat("水平", h);
     }
 
-    private void Attack()
+    public void Attack()
     {
+        aud.PlayOneShot(soundAttack, 0.3f);
 
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, rangeAttack, -transform.up, 0, 1 << 8);
+
+        if (hit.collider.tag == "道具") Destroy(hit.collider.gameObject);
+        if (hit.collider.tag == "道具") aud.PlayOneShot(soundGet, 0.3f); 
     }
 
     private void Hit()
